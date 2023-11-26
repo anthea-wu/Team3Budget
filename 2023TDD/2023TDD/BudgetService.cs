@@ -31,21 +31,21 @@ public class BudgetService
 
         while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
+            int queryDays;
             if (current.ToString("yyyyMM") == start.ToString("yyyyMM"))
             {
-                var queryDays = DateTime.DaysInMonth(current.Year, current.Month) - current.Day + 1;
-
-                totalBudget += GetDailyBudget(current, budgets) * queryDays;
+                queryDays = DateTime.DaysInMonth(current.Year, current.Month) - current.Day + 1;
             }
             else if (current.ToString("yyyyMM") == end.ToString("yyyyMM"))
             {
-                totalBudget += GetDailyBudget(end, budgets) * end.Day;
+                queryDays = end.Day;
             }
             else
             {
-                totalBudget += GetDailyBudget(current, budgets) *
-                               DateTime.DaysInMonth(current.Year, current.Month);
+                queryDays = DateTime.DaysInMonth(current.Year, current.Month);
             }
+            
+            totalBudget += GetDailyBudget(current, budgets) * queryDays;
 
             current = current.AddMonths(1);
         }
