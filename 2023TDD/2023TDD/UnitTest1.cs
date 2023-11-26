@@ -137,7 +137,7 @@ public class BudgetServiceTests
     }
 
     [Test]
-    public void no_overlap()
+    public void no_overlap_before_start()
     {
         GivenBudgetFromRepo(new List<Budget>
         {
@@ -155,6 +155,28 @@ public class BudgetServiceTests
 
         var start = new DateTime(2024, 3, 30);
         var end = new DateTime(2024, 4, 1);
+        Assert.AreEqual(0, _budgetService.Query(start, end));
+    }
+
+    [Test]
+    public void no_overlap_after_end()
+    {
+        GivenBudgetFromRepo(new List<Budget>
+        {
+            new()
+            {
+                YearMonth = "202312",
+                Amount = 310
+            },
+            new()
+            {
+                YearMonth = "202401",
+                Amount = 620
+            }
+        });
+
+        var start = new DateTime(2023, 9, 30);
+        var end = new DateTime(2023, 10, 2);
         Assert.AreEqual(0, _budgetService.Query(start, end));
     }
 

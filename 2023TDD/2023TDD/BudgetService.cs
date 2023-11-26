@@ -15,11 +15,12 @@ public class Period
     public DateTime Start { get; }
     public DateTime End { get; }
 
-    public int OverlappingDays(Period another)
+    public int OverlappingDays(Period budgetPeriod)
     {
-        if (another.End < Start) return 0;
-        var last = End < another.End ? End : another.End;
-        var first = Start > another.Start ? Start : another.Start;
+        if (budgetPeriod.End < Start) return 0;
+        if (budgetPeriod.Start > End) return 0;
+        var last = End < budgetPeriod.End ? End : budgetPeriod.End;
+        var first = Start > budgetPeriod.Start ? Start : budgetPeriod.Start;
         return (last - first).Days + 1;
     }
 }
