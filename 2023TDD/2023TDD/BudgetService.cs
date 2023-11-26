@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace _2023TDD;
 
@@ -34,12 +35,9 @@ public class BudgetService
     public decimal Query(DateTime start, DateTime end)
     {
         if (start > end) return 0;
-        var budgets = _budgetRepo.GetAll();
-        var totalBudget = 0;
 
         var period = new Period(start, end);
-        foreach (var budget in budgets) totalBudget += budget.TotalAmount(period);
-        return totalBudget;
+        return _budgetRepo.GetAll().Sum(budget => budget.TotalAmount(period));
     }
 }
 
