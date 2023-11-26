@@ -24,18 +24,18 @@ public class BudgetService
 
         while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
-            if (start.Year == end.Year && start.Month == end.Month)
+            if (start.ToString("yyyyMM") == end.ToString("yyyyMM"))
             {
                 var queryDays = end.Day - start.Day + 1;
                 totalBudget += GetDailyBudget(start, budgets) * queryDays;
             }
-            else if (current.Year == start.Year && current.Month == start.Month)
+            else if (current.ToString("yyyyMM") == start.ToString("yyyyMM"))
             {
-                var queryDays = DateTime.DaysInMonth(start.Year, start.Month) - start.Day + 1;
+                var queryDays = DateTime.DaysInMonth(current.Year, current.Month) - current.Day + 1;
 
-                totalBudget += GetDailyBudget(start, budgets) * queryDays;
+                totalBudget += GetDailyBudget(current, budgets) * queryDays;
             }
-            else if (current.Year == end.Year && current.Month == end.Month)
+            else if (current.ToString("yyyyMM") == end.ToString("yyyyMM"))
             {
                 totalBudget += GetDailyBudget(end, budgets) * end.Day;
             }
