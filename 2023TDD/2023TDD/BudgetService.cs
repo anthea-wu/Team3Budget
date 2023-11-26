@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using NSubstitute;
 
 namespace _2023TDD;
 
@@ -17,52 +15,46 @@ public class BudgetService
 
     public decimal Query(DateTime start, DateTime end)
     {
-        if (start>end)
-        {
-            return 0;
-        }
+        if (start > end) return 0;
         var budgets = _budgetRepo.GetAll();
 
-        var queryTime = new DateTime(start.Year,start.Month,start.Day);
+        var current = start;
 
         var totalBudget = 0;
-    
-        while(queryTime <= end || (queryTime.Month == end.Month))
+
+        while (current <= end || current.Month == end.Month)
         {
             if (start.Year == end.Year && start.Month == end.Month)
             {
-                var queryDays = end.Day -start.Day+ 1;
+                var queryDays = end.Day - start.Day + 1;
                 totalBudget += GetDailyBudget(start, budgets) * queryDays;
- 
             }
-            else if (queryTime.Year == start.Year && queryTime.Month==start.Month)
+            else if (current.Year == start.Year && current.Month == start.Month)
             {
                 var queryDays = DateTime.DaysInMonth(start.Year, start.Month) - start.Day + 1;
 
                 totalBudget += GetDailyBudget(start, budgets) * queryDays;
             }
-            else if (queryTime.Year == end.Year && queryTime.Month == end.Month)
+            else if (current.Year == end.Year && current.Month == end.Month)
             {
-                totalBudget +=  GetDailyBudget(end, budgets) * end.Day;
+                totalBudget += GetDailyBudget(end, budgets) * end.Day;
             }
             else
             {
-                totalBudget +=  GetDailyBudget(queryTime, budgets) * DateTime.DaysInMonth(queryTime.Year,queryTime.Month);
+                totalBudget += GetDailyBudget(current, budgets) *
+                               DateTime.DaysInMonth(current.Year, current.Month);
             }
 
-            queryTime = queryTime.AddMonths(1);
+            current = current.AddMonths(1);
         }
-        
+
         return totalBudget;
     }
 
     private static int GetDailyBudget(DateTime budgetTime, List<Budget> budgets)
     {
         var budget = budgets.FirstOrDefault(x => x.YearMonth == $"{budgetTime.Year}{budgetTime.Month.ToString("00")}");
-        if (budget==null)
-        {
-            return 0;
-        }
+        if (budget == null) return 0;
         var dailyBudget = budget.Amount / DateTime.DaysInMonth(budgetTime.Year, budgetTime.Month);
         return dailyBudget;
     }
