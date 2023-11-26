@@ -41,15 +41,14 @@ public class BudgetService
 
         var totalBudget = 0;
 
+        var period = new Period(start, end);
         while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
             var budget = budgets.FirstOrDefault(x => x.YearMonth == current.ToString("yyyyMM"));
 
             if (budget != null)
             {
-                var queryDays =
-                    new Period(start, end).OverlappingDays(new Period(budget.FirstDay(), budget.LastDay()));
-                totalBudget += budget.GetDailyBudget() * queryDays;
+                totalBudget += budget.TotalAmount(period);
             }
 
             current = current.AddMonths(1);
@@ -89,5 +88,13 @@ public class Budget
     public DateTime LastDay()
     {
         return new DateTime(FirstDay().Year, FirstDay().Month, Days());
+    }
+
+    public int TotalAmount(Period period)
+    {
+        var queryDays =
+            period.OverlappingDays(new Period(FirstDay(), LastDay()));
+        var totalAmount = GetDailyBudget() * queryDays;
+        return totalAmount;
     }
 }
