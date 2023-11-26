@@ -40,16 +40,20 @@ public class BudgetService
                 if (budget.YearMonth == start.ToString("yyyyMM"))
                 {
                     var last = budget.LastDay();
-                    var first = current;
+                    var first = start;
                     queryDays = (last - first).Days + 1;
                 }
                 else if (budget.YearMonth == end.ToString("yyyyMM"))
                 {
-                    queryDays = end.Day;
+                    var last = end;
+                    var first = budget.FirstDay();
+                    queryDays = (last - first).Days + 1;
                 }
                 else
                 {
-                    queryDays = DateTime.DaysInMonth(current.Year, current.Month);
+                    var last = budget.LastDay();
+                    var first = budget.FirstDay();
+                    queryDays = (last - first).Days + 1;
                 }
 
                 totalBudget += budget.GetDailyBudget() * queryDays;
@@ -83,7 +87,7 @@ public class Budget
         return daysInMonth;
     }
 
-    private DateTime FirstDay()
+    public DateTime FirstDay()
     {
         var firstDay = DateTime.ParseExact(YearMonth, "yyyyMM", null);
         return firstDay;
