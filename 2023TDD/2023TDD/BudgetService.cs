@@ -41,14 +41,6 @@ public class BudgetService
 
         var totalBudget = 0;
 
-
-        if (start.ToString("yyyyMM") == end.ToString("yyyyMM"))
-        {
-            var queryDays = end.Day - start.Day + 1;
-            return budgets.FirstOrDefault(x => x.YearMonth == $"{start.Year}{start.Month.ToString("00")}")
-                .GetDailyBudget() * queryDays;
-        }
-
         while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
             var budget = budgets.FirstOrDefault(x => x.YearMonth == current.ToString("yyyyMM"));
