@@ -4,6 +4,25 @@ using System.Linq;
 
 namespace _2023TDD;
 
+public class Period
+{
+    public Period(DateTime start, DateTime end)
+    {
+        Start = start;
+        End = end;
+    }
+
+    public DateTime Start { get; }
+    public DateTime End { get; }
+
+    public int OverlappingDays(Period another)
+    {
+        var last = End < another.End ? End : another.End;
+        var first = Start > another.Start ? Start : another.Start;
+        return (last - first).Days + 1;
+    }
+}
+
 public class BudgetService
 {
     private readonly IBudgetRepo _budgetRepo;
@@ -36,9 +55,8 @@ public class BudgetService
 
             if (budget != null)
             {
-                var last = end < budget.LastDay() ? end : budget.LastDay();
-                var first = start > budget.FirstDay() ? start : budget.FirstDay();
-                var queryDays = (last - first).Days + 1;
+                var queryDays =
+                    new Period(start, end).OverlappingDays(new Period(budget.FirstDay(), budget.LastDay()));
                 totalBudget += budget.GetDailyBudget() * queryDays;
             }
 
