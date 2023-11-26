@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace _2023TDD;
 
@@ -36,24 +35,10 @@ public class BudgetService
     {
         if (start > end) return 0;
         var budgets = _budgetRepo.GetAll();
-
-        var current = start;
-
         var totalBudget = 0;
 
         var period = new Period(start, end);
-        while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
-        {
-            var budget = budgets.FirstOrDefault(x => x.YearMonth == current.ToString("yyyyMM"));
-
-            if (budget != null)
-            {
-                totalBudget += budget.TotalAmount(period);
-            }
-
-            current = current.AddMonths(1);
-        }
-
+        foreach (var budget in budgets) totalBudget += budget.TotalAmount(period);
         return totalBudget;
     }
 }
