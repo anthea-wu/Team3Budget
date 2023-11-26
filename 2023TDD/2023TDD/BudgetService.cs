@@ -26,39 +26,26 @@ public class BudgetService
         if (start.ToString("yyyyMM") == end.ToString("yyyyMM"))
         {
             var queryDays = end.Day - start.Day + 1;
-            return GetDailyBudget(start, budgets) * queryDays;
+            return budgets.FirstOrDefault(x => x.YearMonth == $"{start.Year}{start.Month.ToString("00")}")
+                .GetDailyBudget() * queryDays;
         }
 
         while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
             int queryDays;
             if (current.ToString("yyyyMM") == start.ToString("yyyyMM"))
-            {
                 queryDays = DateTime.DaysInMonth(current.Year, current.Month) - current.Day + 1;
-            }
             else if (current.ToString("yyyyMM") == end.ToString("yyyyMM"))
-            {
                 queryDays = end.Day;
-            }
             else
-            {
                 queryDays = DateTime.DaysInMonth(current.Year, current.Month);
-            }
-            
-            totalBudget += GetDailyBudget(current, budgets) * queryDays;
 
+            var budget = budgets.FirstOrDefault(x => x.YearMonth == current.ToString("yyyyMM"));
+            if (budget != null) totalBudget += budget.GetDailyBudget() * queryDays;
             current = current.AddMonths(1);
         }
 
         return totalBudget;
-    }
-
-    private static int GetDailyBudget(DateTime budgetTime, List<Budget> budgets)
-    {
-        var budget = budgets.FirstOrDefault(x => x.YearMonth == $"{budgetTime.Year}{budgetTime.Month.ToString("00")}");
-        if (budget == null) return 0;
-        var dailyBudget = budget.Amount / DateTime.DaysInMonth(budgetTime.Year, budgetTime.Month);
-        return dailyBudget;
     }
 }
 
@@ -71,4 +58,11 @@ public class Budget
 {
     public string YearMonth { get; set; }
     public int Amount { get; set; }
+
+    public int GetDailyBudget()
+    {
+        var budgetDate = DateTime.ParseExact(YearMonth, "yyyyMM", null);
+        var dailyBudget = Amount / DateTime.DaysInMonth(budgetDate.Year, budgetDate.Month);
+        return dailyBudget;
+    }
 }
