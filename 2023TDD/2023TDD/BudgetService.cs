@@ -33,15 +33,28 @@ public class BudgetService
         while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
             int queryDays;
-            if (current.ToString("yyyyMM") == start.ToString("yyyyMM"))
-                queryDays = DateTime.DaysInMonth(current.Year, current.Month) - current.Day + 1;
-            else if (current.ToString("yyyyMM") == end.ToString("yyyyMM"))
-                queryDays = end.Day;
-            else
-                queryDays = DateTime.DaysInMonth(current.Year, current.Month);
-
             var budget = budgets.FirstOrDefault(x => x.YearMonth == current.ToString("yyyyMM"));
-            if (budget != null) totalBudget += budget.GetDailyBudget() * queryDays;
+
+            if (budget != null)
+            {
+                if (budget.YearMonth == start.ToString("yyyyMM"))
+                {
+                    var last = budget.LastDay();
+                    var first = current;
+                    queryDays = (last - first).Days + 1;
+                }
+                else if (budget.YearMonth == end.ToString("yyyyMM"))
+                {
+                    queryDays = end.Day;
+                }
+                else
+                {
+                    queryDays = DateTime.DaysInMonth(current.Year, current.Month);
+                }
+
+                totalBudget += budget.GetDailyBudget() * queryDays;
+            }
+
             current = current.AddMonths(1);
         }
 
@@ -74,5 +87,10 @@ public class Budget
     {
         var firstDay = DateTime.ParseExact(YearMonth, "yyyyMM", null);
         return firstDay;
+    }
+
+    public DateTime LastDay()
+    {
+        return new DateTime(FirstDay().Year, FirstDay().Month, Days());
     }
 }
