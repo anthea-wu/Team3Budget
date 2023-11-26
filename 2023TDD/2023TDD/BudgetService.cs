@@ -22,14 +22,16 @@ public class BudgetService
 
         var totalBudget = 0;
 
+
+        if (start.ToString("yyyyMM") == end.ToString("yyyyMM"))
+        {
+            var queryDays = end.Day - start.Day + 1;
+            return GetDailyBudget(start, budgets) * queryDays;
+        }
+
         while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
-            if (start.ToString("yyyyMM") == end.ToString("yyyyMM"))
-            {
-                var queryDays = end.Day - start.Day + 1;
-                totalBudget += GetDailyBudget(start, budgets) * queryDays;
-            }
-            else if (current.ToString("yyyyMM") == start.ToString("yyyyMM"))
+            if (current.ToString("yyyyMM") == start.ToString("yyyyMM"))
             {
                 var queryDays = DateTime.DaysInMonth(current.Year, current.Month) - current.Day + 1;
 
