@@ -22,7 +22,7 @@ public class BudgetService
 
         var totalBudget = 0;
 
-        while (current <= end || current.Month == end.Month)
+        while (current < new DateTime(end.Year, end.Month, 1).AddMonths(1))
         {
             if (start.Year == end.Year && start.Month == end.Month)
             {
